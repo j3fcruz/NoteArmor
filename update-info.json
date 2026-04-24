@@ -1,7 +1,7 @@
 {
-  "version": "2.0.0",
-  "url": "https://github.com/j3fcruz/NoteArmor/releases/download/v2.0.0/Secure_Notepad_Pro_V2.0.0.zip",
-  "sha256": "sha256:adf700a8d2c3ada94f80c87f9b0a70291e0054add68e763c9d11d53eea8eecd0",
-  "min_version": "1.0.0",
-  "release_notes": "Major update: improved stability and new features."
+  "version": "3.1.0",
+  "url": "https://github.com/j3fcruz/NoteArmor/releases/download/v3.1.0/NoteArmor-v3.1.0-Free-Win64.zip",
+  "sha256": "sha256:REPLACE_WITH_ACTUAL_HASH_AFTER_ZIP_IS_UPLOADED",
+  "min_version": "2.0.0",
+  "release_notes": "v3.1.0 Free Edition — Migrated to PySide6, new Fernet encryption engine, v3 .notearmor file format, Professional Blue theme, multi-tab editing, autosave, and compiled encryption core."
 }
