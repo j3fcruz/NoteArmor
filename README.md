@@ -1,297 +1,202 @@
-# Secured Notepad v2.0.0
+# NoteArmor — Secured Notepad Pro (Free Edition)
 
-![Python](https://img.shields.io/badge/python-3.10+-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![PyQt5](https://img.shields.io/badge/PyQt5-%3E=5.15.7-blueviolet)
-![Cryptography](https://img.shields.io/badge/cryptography-%3E=41.0.0-orange)
-![Platform](https://img.shields.io/badge/platform-Windows%7CLinux%7CMac-lightgrey)
-![Release](https://img.shields.io/badge/release-v2.0.0-brightgreen)
-![Status](https://img.shields.io/badge/status-stable-success)
-![Build](https://img.shields.io/badge/build-PyInstaller-blue)
+> **Military-grade encryption meets modern note-taking.**  
+> A privacy-first, offline encrypted text editor built for professionals, developers, and privacy advocates.
 
-
-A professional, modular, and feature-rich text editor built with Python and PyQt5. Enhanced Notepad supports line numbering, dark theme, zooming, and strong AES-256 encryption for sensitive notes.
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
+![PySide6](https://img.shields.io/badge/PySide6-6.5%2B-green?logo=qt)
+![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows)
+![License](https://img.shields.io/badge/License-PU--NC%20v1.0-red)
+![Version](https://img.shields.io/badge/Version-3.1.0-orange)
 
 ---
 
-## 📂 Project Structure
+## Overview
+
+NoteArmor is an enterprise-grade encrypted text editor that keeps your notes safe without cloud dependency. Every file you protect is encrypted locally using **AES-128 via Fernet** with **PBKDF2-HMAC-SHA256** key derivation — no data ever leaves your machine.
+
+This is the **Free / Personal Use Edition**. It is fully functional for individual, non-commercial use.
+
+---
+
+## Features
+
+| Feature | Details |
+|---|---|
+| **Encrypted Save** | Password-protected `.notearmor` files using Fernet + PBKDF2 |
+| **Plaintext Save** | Standard `.txt` files with UTF-8 encoding |
+| **Multi-Tab Editing** | Open and manage multiple notes simultaneously |
+| **Autosave** | Automatic save every 60 seconds for modified files |
+| **Line Numbers** | Built-in line number gutter with current-line highlight |
+| **Zoom Control** | `Ctrl++` / `Ctrl+-` / `Ctrl+R`, plus `Ctrl+Wheel` |
+| **Status Bar** | Live Ln/Col position, encryption status, zoom level |
+| **Professional Blue Theme** | Custom QSS theme, ships bundled via Qt resources |
+| **Offline-First** | Zero network calls, zero telemetry, fully air-gap safe |
+
+---
+
+## Encryption Specification
 
 ```
-EnhancedNotepad/
-├── assets/                  # Project assets like icons and logos
-│   └── screenshots/                                # Screenshots for README
-├── modules/                                        # Modular Python files
-│   ├── editor.py                                   # EnhancedTextEditor with line numbers
-│   ├── encryption_cpp.cp310-win_amd64.pyd          # Encryption/Decryption utilities
-│   └── dialogs.py                                  # Custom dialogs (SaveModeDialog)
-├── resources_rc.py                                 # Notepad main application
-├── notepad.py                                      # Main application entry point
-├── main.py                                      # Main application entry point
-├── README.md                                       # This file
-├── LICENSE                                         # MIT License
-└── requirements.txt                                # Python dependencies
+Algorithm       : Fernet (AES-128-CBC + HMAC-SHA256)
+Key Derivation  : PBKDF2-HMAC-SHA256
+KDF Iterations  : 100,000
+Salt            : 16 bytes, cryptographically random (os.urandom)
+File Format v3  : [16B salt][4B meta_len][JSON metadata][Fernet token]
+File Extension  : .notearmor
 ```
 
+> ⚠️ **Password Warning:** There is no password recovery mechanism. A lost password means permanently lost data. Store your password securely.
+
 ---
 
-## ⚡ Features
+## Screenshots
 
-### 🧠 Productivity
-- **Line Numbers** for better navigation and coding.
-- **Zoom Controls** with `Ctrl++`, `Ctrl+-`, and reset via `Ctrl+0`.
-- **Status Bar Info:** Line, column, character count, zoom, encoding, and encryption state.
+| Main Editor | Encrypted Save | Help |
+|---|---|---|
+| *(Main.png)* | *(Encryption.png)* | *(Help.png)* |
 
-### 🎨 User Interface
-- **Dark Theme (auto-detects system theme)** via `theme_manager.py`.
-- **Icon Manager** ensures resource-based and local fallback loading.
-- **High-DPI Scaling** for 4K and Retina displays.
-
-### 🔒 Security
-- **AES-256-GCM Encryption** for `.txt.enc` files.
-- **HMAC-SHA256 Integrity Validation**.
-- **Pure Python backend** (no `.pyd` dependencies).
-
-### 🧩 Architecture
-- **Fully Modular Codebase** for easy extension and maintenance.
-- **Theme Fallback Handling** (QRC or local folder).
-- **Cross-platform Compatibility** (Windows, Linux, macOS).
 ---
 
-## 🖼 Screenshots
+## Requirements
 
-**Main Editor Window:**
+- **OS:** Windows 10/11 (x64)
+- **Python:** 3.12 (if running from source)
+- **Dependencies:** see `requirements.txt`
 
-![Editor Screenshot](assets/screenshots/Main.png)
+```
+PySide6>=6.5.0,<7.0
+cryptography>=41.0.0
+```
 
-**Encryption Dialog:**
+> `pyotp`, `psutil`, `pytesseract`, `Pillow`, `reportlab`, and `nuitka` are included in `requirements.txt` for the Pro build pipeline. They are **not required** to run the Free Edition from source.
 
-![Encryption Screenshot](assets/screenshots/Encryption.png)
-
-**Help Dialog:**
-
-![Status Bar Screenshot](assets/screenshots/Help.png)
-
-**About Dialog:**
-
-![Status Bar Screenshot](assets/screenshots/About.png)
-
-**Donate Dialog:**
-
-![Status Bar Screenshot](assets/screenshots/Donate.png)
-
-**Terms and Conditions Dialog:**
-
-![Status Bar Screenshot](assets/screenshots/TermsandConditions.png)
-
-**License Agreement Dialog:**
-
-![Status Bar Screenshot](assets/screenshots/LicenseAgreement.png)
 ---
 
-## 🚀 Installation
-
-1. Clone the repository:
+## Installation (From Source)
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/j3fcruz/Secured-Notepad.git
 cd Secured-Notepad
-```
 
-2. Create a virtual environment (recommended):
-
-```bash
+# 2. Create a virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
+venv\Scripts\activate      # Windows
+# source venv/bin/activate # Linux/macOS
 
-3. Install dependencies:
+# 3. Install dependencies
+pip install PySide6>=6.5.0 cryptography>=41.0.0
 
-```bash
-pip install -r requirements.txt
-```
-
-4. Run the application:
-
-```bash
-python notepad.py
-```
-
-> **Note:** Encryption features require the `cryptography` library. If missing, only plaintext saving is available.
-
----
-
-## 🏗 Build & Packaging
-
-To generate a standalone Windows executable using PyInstaller:
-
-1. Install PyInstaller
-
-```bash
-pip install pyinstaller
-```
-2. Build Command (Production Ready)
-
-```bash
-pyinstaller --onedir --noconsole --clean --uac-admin \
-    --icon="assets/icons/icon.ico" \
-    --name="Secure_Notepad_Pro" \
-    --add-data "ui;ui" \
-    --add-data "assets;assets" \
-    --exclude-module PySide6 \
-    notepad.py
-```
-Flags Explanation:
-
-| Module               | Description                                        |
-|----------------------|----------------------------------------------------|
-| **--onedir**         | Creates a folder with executable + dependencies.ad |
-| **--noconsole**      | Hides the console window (GUI only).               |
-| **--clean**          | Removes previous build artifacts before buildin    |
-| **--uac-admin**      | Requests admin privileges on Windows.              |
-| **--icon**           | Application icon for the executable.            |
-| **--name**           | Name of the generated executable.           
-| **--add-data**       | Include additional folders (UI files, assets, etc.).           
-| **--exclude-module** | Exclude conflicting Qt bindings (like PySide6).           
-
-3. Output
-
-After running the command, the executable will be in:
-
-```bash    
-dist/Secure_Notepad_Pro/
-```
-Run Secure_Notepad_Pro.exe directly from this folder.
-
-4. Optional: .spec File
-
-For repeated builds without typing the command:
-
-1. Generate the initial .spec file:
-```bash    
-pyinstaller --onedir --noconsole --icon="assets/icons/icon.ico" notepad.py
-```
-2. Edit the .spec file to include additional data folders:
-```bash    
-a = Analysis(
-    ['notepad.py'],
-    pathex=[],
-    binaries=[],
-    datas=[('ui', 'ui'), ('assets', 'assets')],
-    ...
-)
-```
-3. Build using the .spec
-```bash    
-pyinstaller notepad.spec
-```
----✅ This ensures all resources (.qrc, themes, icons, screenshots) are bundled automatically.
-
-
-
-## 📝 Usage
-
-1. **New File:** Ctrl+N
-2. **Open File:** Ctrl+O
-3. **Save File:** Ctrl+S
-4. **Save As:** Ctrl+Shift+S (select plaintext or encrypted mode)
-5. **Undo/Redo:** Ctrl+Z / Ctrl+Y
-6. **Cut/Copy/Paste:** Ctrl+X / Ctrl+C / Ctrl+V
-7. **Zoom In/Out:** Ctrl++ / Ctrl+-
-8. **Restore Zoom:** Ctrl+0
-9. **Toggle Status Bar:** View > Status Bar
-
-**Encrypted File Workflow:**
-
-1. Choose `Save As` and select `Encrypted (.txt.enc)`.
-2. Enter a strong password.
-3. Open `.txt.enc` file: enter the password to decrypt.
-
----
-
-## ⚙ Dependencies
-
-```text
-PyQt5>=5.15.7
-cryptography>=41.0.0  # Optional for encryption
-```
-
-Install via pip:
-
-```bash
-pip install -r requirements.txt
+# 4. Run
+python main.py
 ```
 
 ---
 
-## 🛠 Contributing
+## Project Structure
 
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`.
-3. Make your changes.
-4. Commit changes: `git commit -m 'Add YourFeature'`.
-5. Push to branch: `git push origin feature/YourFeature`.
-6. Create a Pull Request.
-
-> All contributions must follow modular structure and code documentation.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 👤 Author
-
-**Marco Polo (PatronHub)**  
-GitHub: [@j3fcruz](https://github.com/j3fcruz)  
-Ko-fi: [@marcopolo55681](https://ko-fi.com/marcopolo55681)  
-Website: [PatronHub Devs](https://patronhubdevs.online)
-
----
-
-
-## 🔑 Notes
-
-* Always backup your encrypted files and passwords.
-* The application supports only UTF-8 encoded text files.
-* Recommended for note-taking, coding, and personal documentation.
-
----
-
-Ready to contribute, showcase, or fork for your own projects!
-
----
-## 🧩 Version History
-
-### [2.0.0] – 2025-11-06  
-#### Major Release  
-
-##### 🚀 New Features
-- **Theme Manager:** Added `theme_manager.py` for automatic theme switching based on the system (dark/light mode detection).
-- **Icon Manager:** Added `icon_manager.py` to centralize icon loading and resource fallback handling.
-- **High-DPI Support:** Improved UI scaling for 4K and HiDPI displays.
-- **Modular Architecture:** Moved main UI logic into `/ui` folder for better structure, maintainability, and clarity.
-
-##### 🔐 Security & Backend
-- Replaced compiled `.pyd` encryption backend with pure Python implementation for transparency, portability, and easier builds.
-
-##### 🎨 UI & UX
-- Enhanced dark theme styling and improved stylesheet handling with fallback to local asset folder if resource not found.
-- Refined window icon handling for better cross-platform display consistency.
-
-##### 🧩 Developer Experience
-- Simplified imports and organized codebase for better readability.
-- Prepared project for easier packaging with PyInstaller and GitHub releases.
-
-##### 🔍 Zoom Controls
-- Improved zoom functionality with smoother scaling and better status bar updates.
+```
+NoteArmor/
+├── main.py                    # Entry point — logging, QApplication bootstrap
+├── requirements.txt
+│
+├── config/
+│   └── app_config.py          # App metadata, paths, constants (no .env)
+│
+├── core/
+│   └── encryption.pyd         # Compiled encryption module (Nuitka — Windows x64)
+│
+├── ui/
+│   └── notearmor_free.py      # Main window (QMainWindow) — tabs, menus, file I/O
+│
+├── dialogs/
+│   ├── about_dialog.py        # About (app info + license text)
+│   ├── help_dialog.py         # Help (quick start, shortcuts, troubleshooting)
+│   ├── password_entry_dialog.py
+│   ├── save_dialog.py         # Save mode selector (plaintext vs encrypted)
+│   └── terms_conditions_dialog.py
+│
+├── utils/
+│   ├── editor.py              # EnhancedTextEditor — line numbers, zoom, highlight
+│   ├── advanced_features.py   # Syntax highlighting, recent files (Pro carry-over)
+│   ├── file_handler.py        # FileHandler class (legacy path — not used by Free UI)
+│   ├── tab_manager.py         # TabManager class (legacy path — not used by Free UI)
+│   ├── logger.py              # Logger class (structured file + console logging)
+│   ├── icon_manager.py        # Qt resource icon loader
+│   ├── theme_manager.py       # QSS theme loader
+│   ├── status_manager.py      # Status bar helper
+│   └── _path_utils.py         # PathResolver — frozen/dev path resolution
+│
+├── resources/
+│   ├── icons_rc.py            # Qt compiled icon resources
+│   ├── themes_rc.py           # Qt compiled theme (QSS) resources
+│   └── screenshots_rc.py      # Qt compiled screenshot resources
+│
+└── assets/
+    └── icons/
+        └── notearmor.ico
+```
 
 ---
 
-### [1.0.0] – 2025-10-28  
-#### Initial Release
-- First stable version of Enhanced Notepad.  
-- Basic text editing, file open/save, and dark theme support.
+## Keyboard Shortcuts
+
+| Action | Shortcut |
+|---|---|
+| New Tab | `Ctrl+N` |
+| Open File | `Ctrl+O` |
+| Save | `Ctrl+S` |
+| Save As | `Ctrl+Shift+S` |
+| Undo | `Ctrl+Z` |
+| Redo | `Ctrl+Y` |
+| Cut / Copy / Paste | `Ctrl+X` / `Ctrl+C` / `Ctrl+V` |
+| Zoom In / Out | `Ctrl++` / `Ctrl+-` |
+| Reset Zoom | `Ctrl+R` |
+| Help | `F1` |
+| Exit | `Ctrl+Q` |
+
+---
+
+## Security Notes
+
+- Passwords are held **in-memory only** within the `tab_files` dict for the session.
+- No password is written to disk, logs, or any external store.
+- The autosave routine skips encrypted tabs — only plaintext files are autosaved automatically.
+- Log output is written to `notearmor.log` at `WARNING` level in production builds.
+- The `core/encryption.pyd` binary is a **Nuitka-compiled** Windows DLL. Source code is not included in this repository.
+
+---
+
+## Known Limitations (Free Edition)
+
+- Single theme only (Professional Blue). Theme switching available in Pro.
+- No keyfile support. Password-only encryption.
+- No search & replace UI (module present but not wired to menu).
+- Syntax highlighting available in code but not connected to Free Edition UI.
+- Tab index key (`tab_files` dict) can desync if tabs are closed out-of-order — handle with care when modifying.
+
+---
+
+## Support & Donation
+
+NoteArmor is free for personal use. If it saves your data or your sanity, consider supporting development:
+
+- 🌐 Website: [patronhubdevs.online](https://www.patronhubdevs.online)
+- ☕ Ko-fi: [ko-fi.com/marcopolo55681](https://ko-fi.com/marcopolo55681)
+- 💸 PayPal: [paypal.me/jofreydelacruz13](https://paypal.me/jofreydelacruz13)
+- ₿ Bitcoin: `1BcWJT8gBdZSPwS8UY39X9u4Afu1nZSzqk`
+- Ξ Ethereum: `0xcd5eef32ff4854e4cefa13cb308b727433505bf4`
+
+---
+
+## License
+
+**NoteArmor Personal Use and Non-Commercial License (PU-NC) v1.0**  
+Copyright © 2025 PatronHubDevs Technologies. All rights reserved.
+
+See [LICENSE](LICENSE) for full terms.
+
+---
+
+*Built with ❤️ by Marco Polo / PatronHubDevs Technologies*

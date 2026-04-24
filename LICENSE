@@ -1,21 +1,253 @@
-MIT License
+NoteArmor Personal Use and Non-Commercial License (PU-NC)
+Version 1.0 — Extended Edition
+Copyright (c) 2025 PatronHubDevs Technologies
+Developer: Marco Polo
+Contact: contact@patronhubdevs.online
+Website: https://www.patronhubdevs.online
 
-Copyright (c) 2025 Marco Polo (PatronHub)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the 'Software'), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+PREAMBLE
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+This License governs the use, reproduction, modification, and distribution
+of NoteArmor Secured Notepad Pro (the "Software"), a privacy-first encrypted
+text editor developed by PatronHubDevs Technologies.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+The intent of this License is to:
+  (a) Allow individuals to use the Software freely for personal, private,
+      non-commercial purposes;
+  (b) Protect the intellectual property and commercial interests of the Author;
+  (c) Prevent exploitation of the Software in commercial products, services,
+      or competitive offerings without explicit written authorization;
+  (d) Preserve the integrity of the Software's identity and branding.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1 — DEFINITIONS
+
+1.1 "Software" means the NoteArmor Secured Notepad Pro application in its
+    entirety, including but not limited to: all Python source files, compiled
+    extension modules (.pyd), Qt resource files, QSS stylesheets, icon assets,
+    binary assets, documentation, and associated configuration files.
+
+1.2 "Author" means PatronHubDevs Technologies and its principal developer,
+    Marco Polo, and any authorized contributors.
+
+1.3 "Licensee" means any individual or entity exercising rights under this
+    License.
+
+1.4 "Personal Use" means use by a natural person (human individual) solely
+    for private, recreational, educational, or research purposes that do not
+    generate any direct or indirect commercial benefit, revenue, or
+    compensation of any kind.
+
+1.5 "Commercial Use" means any use, deployment, distribution, or integration
+    of the Software intended to generate revenue, reduce costs, support a
+    business operation, or provide commercial advantage, including but not
+    limited to:
+      - Selling or licensing the Software or a derivative thereof
+      - Deploying the Software as part of a paid product or service
+      - Using the Software to process data for clients or customers
+      - Offering the Software as a hosted or SaaS solution
+      - Including the Software in a commercial bundle or installer
+
+1.6 "Derivative Work" means any work that is based on or incorporates the
+    Software, or any portion thereof, including modifications, translations,
+    adaptations, abridgements, or any other form in which the Software may
+    be recast, transformed, or adapted.
+
+1.7 "Distribution" means making the Software or a Derivative Work available
+    to any third party by any means, including electronic transfer, physical
+    media, or web publication.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 2 — GRANT OF LICENSE
+
+Subject to full compliance with all terms of this License, the Author
+hereby grants the Licensee a limited, non-exclusive, non-transferable,
+non-sublicensable, royalty-free license to:
+
+2.1 PERSONAL USE
+    Install, execute, and use the Software on any number of personal devices
+    owned or operated by the Licensee, solely for Personal Use as defined
+    in Section 1.4.
+
+2.2 VIEW AND STUDY SOURCE CODE
+    Access and read the published source code files for educational and
+    personal learning purposes only.
+
+2.3 PERSONAL MODIFICATION
+    Modify the Software's source code solely for Personal Use. Such
+    modifications must not be distributed, published, or shared in any form
+    without prior written permission from the Author.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 3 — RESTRICTIONS
+
+The following acts are expressly PROHIBITED without prior written permission
+from the Author:
+
+3.1 COMMERCIAL USE
+    You may not use the Software, in whole or in part, for any Commercial
+    Use as defined in Section 1.5.
+
+3.2 DISTRIBUTION
+    You may not distribute, publish, upload, post, transmit, or otherwise
+    make available the Software or any Derivative Work to any third party,
+    whether in source or binary form.
+
+3.3 SUBLICENSING
+    You may not grant sublicenses to the Software or any portion thereof.
+
+3.4 REBRANDING AND MISREPRESENTATION
+    You may not rebrand, rename, or otherwise represent the Software as your
+    own creation. You may not remove, alter, or obscure any copyright notices,
+    authorship attribution, license notices, or trademark designations
+    contained in the Software.
+
+3.5 SAAS AND HOSTED DEPLOYMENT
+    You may not deploy the Software or any Derivative Work as a cloud-based,
+    web-hosted, or Software-as-a-Service (SaaS) offering accessible to
+    third parties.
+
+3.6 COMPETITIVE USE
+    You may not use the Software, its source code, architecture, encryption
+    logic, file format specification, or UI design as a reference or basis
+    for developing a competing product or service without express written
+    consent from the Author.
+
+3.7 DECOMPILATION OF PROTECTED MODULES
+    You may not reverse engineer, decompile, disassemble, or otherwise
+    attempt to derive the source code of the compiled extension module
+    `core/encryption.pyd` or any other compiled binary component of the
+    Software.
+
+3.8 AUTOMATED DEPLOYMENT OR REDISTRIBUTION
+    You may not include the Software in automated provisioning systems,
+    enterprise deployment tools, app stores, software repositories, package
+    managers, or similar systems without written authorization from the Author.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 4 — OPEN SOURCE COMPONENT NOTICES
+
+The Software depends on the following open source libraries. Their licenses
+govern their respective code only and do not extend to the Software as a whole.
+
+  Component        License       Reference
+  ─────────────────────────────────────────────────────────────────────────
+  PySide6          LGPL v3       https://doc.qt.io/qt-6/lgpl.html
+  cryptography     Apache 2.0    https://github.com/pyca/cryptography
+  ─────────────────────────────────────────────────────────────────────────
+
+The inclusion of these components does not alter the non-commercial terms
+applied to NoteArmor as a combined work under this License.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 5 — INTELLECTUAL PROPERTY
+
+5.1 All title, ownership, and intellectual property rights in and to the
+    Software, including but not limited to the encryption file format (v3),
+    UI design, QSS themes, iconography, and brand identity, remain exclusively
+    with the Author.
+
+5.2 This License does not constitute a sale, assignment, or transfer of any
+    intellectual property rights to the Licensee.
+
+5.3 The name "NoteArmor," "Secured Notepad Pro," and "PatronHubDevs
+    Technologies" are trademarks of the Author and may not be used to
+    endorse, promote, or brand any product or service derived from the
+    Software without written permission.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 6 — DISCLAIMER OF WARRANTIES
+
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR SECURITY OF DATA.
+
+THE AUTHOR MAKES NO REPRESENTATION OR WARRANTY THAT:
+  - THE SOFTWARE WILL MEET THE LICENSEE'S REQUIREMENTS;
+  - THE SOFTWARE WILL BE ERROR-FREE OR UNINTERRUPTED;
+  - ANY DEFECTS WILL BE CORRECTED;
+  - THE SOFTWARE IS FREE OF VULNERABILITIES UNKNOWN TO THE AUTHOR.
+
+THE LICENSEE ASSUMES ALL RISK ASSOCIATED WITH THE USE OF THE SOFTWARE,
+INCLUDING THE RISK OF DATA LOSS ARISING FROM FORGOTTEN PASSWORDS, FILE
+CORRUPTION, OR HARDWARE FAILURE. THE AUTHOR PROVIDES NO MECHANISM FOR
+PASSWORD RECOVERY.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 7 — LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA, LOSS
+OF PROFITS, LOSS OF BUSINESS OPPORTUNITY, OR PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES), HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE),
+ARISING IN ANY WAY OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE,
+EVEN IF THE AUTHOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 8 — TERMINATION
+
+8.1 This License is effective until terminated.
+
+8.2 The Author may terminate this License immediately and without notice
+    if the Licensee:
+      - Breaches any term of this License;
+      - Uses the Software for Commercial Use without written authorization;
+      - Distributes the Software in violation of Section 3.2;
+      - Decompiles or reverse engineers protected components.
+
+8.3 Upon termination, the Licensee must immediately:
+      - Cease all use of the Software;
+      - Delete all copies of the Software from all devices and storage media;
+      - Destroy any Derivative Works created under this License.
+
+8.4 Sections 4, 5, 6, 7, and 9 survive termination of this License.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 9 — GENERAL PROVISIONS
+
+9.1 ENTIRE AGREEMENT
+    This License constitutes the entire agreement between the parties with
+    respect to the Software and supersedes all prior understandings,
+    representations, or agreements.
+
+9.2 SEVERABILITY
+    If any provision of this License is held invalid, illegal, or
+    unenforceable, the remaining provisions shall continue in full force
+    and effect.
+
+9.3 NO WAIVER
+    Failure of the Author to enforce any provision of this License does
+    not constitute a waiver of the right to enforce such provision in the
+    future.
+
+9.4 GOVERNING LAW
+    This License shall be governed by and construed in accordance with the
+    laws of the jurisdiction in which the Author is domiciled, without
+    regard to conflict of law principles.
+
+9.5 COMMERCIAL LICENSING
+    For commercial use, enterprise deployment, OEM licensing, or integration
+    inquiries, contact the Author:
+
+      Email   : contact@patronhubdevs.online
+      Website : https://www.patronhubdevs.online
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+END OF LICENSE
+
+NoteArmor Personal Use and Non-Commercial License (PU-NC) v1.0
+Copyright © 2025 PatronHubDevs Technologies — All Rights Reserved.

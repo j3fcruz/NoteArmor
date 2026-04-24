@@ -1,0 +1,51 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+
+# ── Virtual environments ─────────────────────────────────
+venv/
+.venv/
+env/
+.env
+
+# ── Build artifacts ──────────────────────────────────────
+build/
+dist/
+*.spec
+*.egg-info/
+
+# ── Nuitka output ────────────────────────────────────────
+*.build/
+*.dist/
+*.onefile-build/
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+
+# ── IDE / OS ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ── Sensitive / internal files ───────────────────────────
+# Compiled encryption module (Windows binary — distribute separately)
+core/encryption.pyd
+
+# Source backup — never publish raw encryption source
+core/encryption.py_bak
+
+# Qt compiled resource caches (regenerate via pyrcc6)
+resources/__pycache__/
+
+# ── NoteArmor runtime files ──────────────────────────────
+notearmor.log
+*.notearmor

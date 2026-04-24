@@ -2,56 +2,75 @@
 utils/icon_manager.py
 ---------------
 Enterprise-grade icon loader for Enhanced Notepad Pro.
-Supports Qt resources and local fallback for PyInstaller.
+Supports Qt resources and local fallback for PyInstaller / Nuitka.
 """
 
 import os
 import sys
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import Qt
+
 
 # -----------------------------------------------------
 # Helper: Get Absolute Path
 # -----------------------------------------------------
 def resource_path(relative_path: str) -> str:
-    """Get absolute path to resource (works in dev and PyInstaller)."""
+    """
+    Get absolute path to resource.
+    Works for:
+    - Development
+    - PyInstaller (--onefile / --onedir)
+    - Nuitka
+    """
     try:
         base_path = sys._MEIPASS  # PyInstaller
     except AttributeError:
         base_path = os.path.abspath(".")
+
     return os.path.join(base_path, relative_path)
+
 
 # -----------------------------------------------------
 # Load Icon
 # -----------------------------------------------------
 def load_icon(name: str = "icon.png") -> QIcon:
     """
-    Load icon from Qt resource or local folder.
-    Fallback: transparent 32x32 QIcon.
+    Load icon using the following priority:
+    1. Qt Resource (.qrc)
+    2. Local assets folder
+    3. Transparent fallback icon
     """
-    # Try Qt resource
+
+    # ---- Qt Resource (Preferred) ----
     qrc_path = f":/assets/icons/{name}"
     icon = QIcon(qrc_path)
     if not icon.isNull():
         return icon
 
-    # Try local file
-    local_path = resource_path(os.path.join("assets", "icons", name))
+    # ---- Local File Fallback ----
+    local_path = resource_path(
+        os.path.join("assets", "icons", name)
+    )
+
     if os.path.exists(local_path):
         icon = QIcon(local_path)
         if not icon.isNull():
             return icon
 
-    # Fallback: transparent placeholder
+    # ---- Safe Fallback (No crash) ----
     placeholder = QPixmap(32, 32)
     placeholder.fill(Qt.transparent)
     return QIcon(placeholder)
 
+
 # -----------------------------------------------------
-# Apply App Icon
+# Apply Application Icon
 # -----------------------------------------------------
 def set_app_icon(app, name: str = "icon.png") -> QIcon:
-    """Set application-wide icon."""
+    """
+    Apply application-wide icon.
+    Safe for early startup.
+    """
     icon = load_icon(name)
     app.setWindowIcon(icon)
     return icon

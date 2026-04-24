@@ -1,96 +1,151 @@
 # config/app_config.py
 # ---------------------------------------------------------
-# 🔐 Secure Notepad Pro - Config (Environment-based)
+# NoteArmor Free Edition — Configuration (v3.1)
+# Compile-time constants only — no dotenv, no os.getenv.
+#
+# REMOVED vs Pro:
+#   - All theme constants except BLUE (Professional Blue)
+#   - THEMES dict collapsed to single-entry (Free Edition is single-theme)
+#   - THEME_SHORTCUTS removed (no theme switching in Free Edition)
+#   - GET_THEMES alias removed
+#   - DARK_THEME_QSS / LIGHT_THEME_QSS aliases removed
+# PRESERVED:
+#   - All app metadata, asset paths, external links
+#   - resource_path() — frozen-safe resolver (Nuitka / PyInstaller)
+#   - DEFAULT_THEME / DEFAULT_THEME_QSS — used by theme_manager
+#   - get_app_metadata() — used by dialogs
 # ---------------------------------------------------------
 
 import os
 import sys
-from dotenv import load_dotenv
+from datetime import datetime
 
 # ---------------------------------------------------------
-# 🌍 Load .env File (Development Mode)
+# Environment
 # ---------------------------------------------------------
-ENV_FILE = ".env"
-if os.path.exists(ENV_FILE):
-    load_dotenv(ENV_FILE)
-else:
-    print(f"⚠️ Warning: {ENV_FILE} not found. Using default values.")
+APP_ENV = "production"
+IS_PRODUCTION = True
+IS_DEVELOPMENT = False
 
 # ---------------------------------------------------------
-# 📦 Resource Path (Supports PyInstaller)
+# Application Metadata
+# ---------------------------------------------------------
+APP_NAME = "NoteArmor Secure Notepad Pro"
+APP_TITLE = APP_NAME
+HASH_NAME = "notearmor"
+APP_VERSION = "3.1.0"
+AUTHOR = "Marco Polo"
+APP_DEVELOPER = "PatronHubDevs Technologies"
+COPYRIGHT_YEAR = "2025"
+COPYRIGHT = f"© {COPYRIGHT_YEAR} {APP_NAME}. All rights reserved."
+ABOUT_APP = "Military-grade encryption meets modern note-taking."
+DATE_STR = datetime.now().strftime("%B %d, %Y")
+
+DESCRIPTION = (
+    f"{APP_NAME} by {AUTHOR} is an enterprise-grade encrypted text editor "
+    "built for professionals, developers, and privacy advocates. It combines "
+    "elegant UI design with advanced cryptographic protection to keep your "
+    "notes safe and secure."
+)
+
+
+# ---------------------------------------------------------
+# Resource Path — Frozen-safe (Nuitka + PyInstaller)
 # ---------------------------------------------------------
 def resource_path(relative_path: str) -> str:
     """
     Resolve absolute path to a resource.
-    Works both in development and PyInstaller compiled builds.
-    Automatically falls back to ./assets if missing.
+    Supports Qt resource paths, Nuitka frozen, PyInstaller frozen, and dev.
     """
-    try:
-        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-        path = os.path.join(base_path, relative_path)
-        if os.path.exists(path):
-            return path
+    if relative_path.startswith(":/"):
+        return relative_path
 
-        # Fallback to local assets folder
-        fallback = os.path.join(os.getcwd(), "assets", os.path.basename(relative_path))
-        return fallback if os.path.exists(fallback) else relative_path
+    try:
+        if getattr(sys, "frozen", False):
+            if hasattr(sys, "_MEIPASS"):
+                # PyInstaller
+                base_path = sys._MEIPASS
+            else:
+                # Nuitka: executable directory
+                base_path = os.path.dirname(sys.executable)
+
+            frozen_path = os.path.join(base_path, relative_path)
+            if os.path.exists(frozen_path):
+                return frozen_path
+
+        # Development fallback
+        dev_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", relative_path)
+        )
+        if os.path.exists(dev_path):
+            return dev_path
+
+        cwd_path = os.path.join(os.getcwd(), relative_path)
+        return cwd_path if os.path.exists(cwd_path) else relative_path
+
     except Exception:
         return relative_path
 
-# ---------------------------------------------------------
-# 🧱 Application Metadata
-# ---------------------------------------------------------
-APP_NAME = os.getenv("APP_NAME", "Secure Notepad Pro")
-HASH_NAME = os.getenv("HASH_NAME", "securenotepadpro")
-APP_VERSION = os.getenv("APP_VERSION", "2.0.0")
-AUTHOR = os.getenv("AUTHOR", "Marco Polo")
-APP_DEVELOPER = os.getenv("APP_DEVELOPER", "PatronHubDevs")
-COPYRIGHT_YEAR = os.getenv("COPYRIGHT_YEAR", "2025")
-COPYRIGHT = f"© {COPYRIGHT_YEAR} {APP_NAME}. All rights reserved."
-ABOUT_APP = os.getenv("ABOUT_APP", "Military-grade encryption meets modern note-taking.")
-
-DESCRIPTION = os.getenv(
-    "DESCRIPTION",
-    f"""{APP_NAME} by {AUTHOR} is an enterprise-grade encrypted text editor 
-built for professionals, developers, and privacy advocates. It combines elegant 
-UI design with advanced cryptographic protection to keep your notes safe and secure."""
-)
 
 # ---------------------------------------------------------
-# 🖼️ Resource & Asset Paths
+# Asset Paths (Qt resource paths only)
 # ---------------------------------------------------------
-ICON_PATH = resource_path(os.getenv("ICON_PATH", "assets/icons/lock_icon.png"))
-ABOUT_ICON_PATH = resource_path(os.getenv("ABOUT_ICON_PATH", "assets/icons/about_icon.png"))
-DONATE_ICON_PATH = resource_path(os.getenv("DONATE_ICON_PATH", "assets/icons/donate_icon.png"))
-HELP_ICON_PATH = resource_path(os.getenv("HELP_ICON_PATH", "assets/icons/help_icon.png"))
-MAYA_QR_PATH = resource_path(os.getenv("MAYA_QR_PATH", "assets/resources/maya_qr.bin"))
-MAYA_QR_KEY = os.getenv("MAYA_QR_KEY", "").encode()
+ICON_PATH = ":/assets/icons/icon.png"
+LOGO_PATH = ":/assets/logo/logo.png"
+ABOUT_ICON_PATH = ":/assets/icons/about_icon.png"
+DONATE_ICON_PATH = ":/assets/icons/donate_icon.png"
+HELP_ICON_PATH = ":/assets/icons/help_icon.png"
+LICENSE_ICON_PATH = ":/assets/icons/license_icon.png"
+LOCK_ICON_PATH = ":/assets/icons/lock_icon.ico"
+README_ICON_PATH = ":/assets/icons/readme_icon.png"
+SAVE_ICON_PATH = ":/assets/icons/save_icon.ico"
+TERMS_ICON_PATH = ":/assets/icons/terms_icon.png"
+
+#MAYA_QR_PATH = ":/assets/resources/maya_qr.bin"
+#MAYA_QR_KEY = b""  # Injected at build time — never from env
+
+SCREENSHOT_PATH_IMAGES = [
+    resource_path(os.path.join("assets", "screenshots", "Main.png")),
+    resource_path(os.path.join("assets", "screenshots", "Encryption.png")),
+    resource_path(os.path.join("assets", "screenshots", "Help.png")),
+    resource_path(os.path.join("assets", "screenshots", "About.png")),
+    resource_path(os.path.join("assets", "screenshots", "Donate.png")),
+    resource_path(os.path.join("assets", "screenshots", "TermsandConditions.png")),
+    resource_path(os.path.join("assets", "screenshots", "LicenseAgreement.png")),
+]
 
 # ---------------------------------------------------------
-# 🌐 External Links (Public-Safe)
+# External Links
 # ---------------------------------------------------------
-GITHUB_ID = os.getenv("GITHUB_ID", "https://github.com/j3fcruz/Secured-Notepad")
-KOFI_ID = os.getenv("KOFI_ID", "https://ko-fi.com/marcopolo55681")
-PAYPAL_ID = os.getenv("PAYPAL_ID", "https://paypal.me/jofreydelacruz13")
+MAIL_TO = "mailto:contact@patronhubdevs.online"
+HOMEPAGE = "https://www.patronhubdevs.online"
+GITHUB_ID = "https://github.com/j3fcruz/Secured-Notepad"
+KOFI_ID = "https://ko-fi.com/marcopolo55681"
+PAYPAL_ID = "https://paypal.me/jofreydelacruz13"
 
-BTC_NAME = os.getenv("BTC_NAME", "Bitcoin (BTC) Address")
-BTC_ID = os.getenv("BTC_ID", "1BcWJT8gBdZSPwS8UY39X9u4Afu1nZSzqk")
+BTC_NAME = "Bitcoin (BTC) Address"
+BTC_ID = "1BcWJT8gBdZSPwS8UY39X9u4Afu1nZSzqk"
 
-ETH_NAME = os.getenv("ETH_NAME", "Ethereum (ETH) Address")
-ETH_ID = os.getenv("ETH_ID", "0xcd5eef32ff4854e4cefa13cb308b727433505bf4")
+ETH_NAME = "Ethereum (ETH) Address"
+ETH_ID = "0xcd5eef32ff4854e4cefa13cb308b727433505bf4"
 
 # ---------------------------------------------------------
-# ⚙️ Environment Detection
+# Theme — Free Edition: Professional Blue only
+# (All other theme constants removed.)
 # ---------------------------------------------------------
-APP_ENV = os.getenv("APP_ENV", "development").lower()
-IS_PRODUCTION = APP_ENV == "production"
-IS_DEVELOPMENT = APP_ENV == "development"
+BLUE = ":/assets/themes/professional_blue.qss"
 
-def safe_log(msg: str):
-    """Safe logging (avoids PyCharm/IDE crash issues)."""
-    try:
-        print(msg)
-    except Exception:
-        pass
+DEFAULT_THEME_QSS = BLUE
+DEFAULT_THEME = "Professional Blue Theme"
 
-safe_log(f"✅ Secure Notepad Pro config loaded successfully ({APP_ENV.upper()} MODE)")
+
+def get_app_metadata() -> dict:
+    """Returns application metadata dict for UI consumption."""
+    return {
+        "name": APP_NAME,
+        "version": APP_VERSION,
+        "author": AUTHOR,
+        "company": APP_DEVELOPER,
+        "copyright": COPYRIGHT,
+        "env": APP_ENV,
+    }

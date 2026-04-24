@@ -1,3 +1,4 @@
+import re
 """
 utils/advanced_features.py
 
@@ -15,15 +16,13 @@ Advanced features module for Secure Notepad Pro:
 import json
 from datetime import datetime
 from pathlib import Path
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QTabWidget, QMessageBox, QDialog, QVBoxLayout, QHBoxLayout,
     QLabel, QListWidget, QListWidgetItem, QPushButton, QCheckBox,
-    QFileDialog,  QTextEdit,
-    QLineEdit
+    QFileDialog, QTextEdit, QLineEdit, QInputDialog
 )
-from PyQt5.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject
-
+from PySide6.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat
+from PySide6.QtCore import QTimer, Signal, QObject
 
 # ===================== SYNTAX HIGHLIGHTER =====================
 class PythonHighlighter(QSyntaxHighlighter):
@@ -55,8 +54,6 @@ class PythonHighlighter(QSyntaxHighlighter):
         self.highlighting_rules.append((r"#.*", comment_format))
 
     def highlightBlock(self, text):
-        """Apply highlighting to text block"""
-        import re
         for pattern, char_format in self.highlighting_rules:
             for match in re.finditer(pattern, text):
                 start, end = match.span()
@@ -88,8 +85,6 @@ class HTMLHighlighter(QSyntaxHighlighter):
         self.highlighting_rules.append((r"'.*?'", string_format))
 
     def highlightBlock(self, text):
-        """Apply highlighting to text block"""
-        import re
         for pattern, char_format in self.highlighting_rules:
             for match in re.finditer(pattern, text):
                 start, end = match.span()
@@ -107,7 +102,6 @@ class RecentFilesManager:
         self.recent_files = self.load()
 
     def add_file(self, file_path):
-        """Add file to recent list"""
         file_path = str(Path(file_path).resolve())
         if file_path in self.recent_files:
             self.recent_files.remove(file_path)
@@ -116,18 +110,15 @@ class RecentFilesManager:
         self.save()
 
     def remove_file(self, file_path):
-        """Remove file from recent list"""
         file_path = str(Path(file_path).resolve())
         if file_path in self.recent_files:
             self.recent_files.remove(file_path)
             self.save()
 
     def get_files(self):
-        """Get list of recent files"""
         return [f for f in self.recent_files if Path(f).exists()]
 
     def save(self):
-        """Save recent files to config"""
         try:
             with open(self.config_file, 'w') as f:
                 json.dump(self.recent_files, f)
@@ -135,7 +126,6 @@ class RecentFilesManager:
             print(f"Error saving recent files: {e}")
 
     def load(self):
-        """Load recent files from config"""
         try:
             if self.config_file.exists():
                 with open(self.config_file, 'r') as f:
@@ -145,7 +135,6 @@ class RecentFilesManager:
         return []
 
     def clear(self):
-        """Clear recent files"""
         self.recent_files = []
         self.save()
 
@@ -154,7 +143,7 @@ class RecentFilesManager:
 class AutosaveManager(QObject):
     """Manage autosave and backup functionality"""
 
-    autosave_triggered = pyqtSignal()
+    autosave_triggered = Signal()
 
     def __init__(self, interval_seconds=60):
         super().__init__()
@@ -167,28 +156,23 @@ class AutosaveManager(QObject):
         self.timer.setInterval(self.interval)
 
     def start(self):
-        """Start autosave timer"""
         self.timer.start()
 
     def stop(self):
-        """Stop autosave timer"""
         self.timer.stop()
 
     def create_backup(self, file_path, content):
-        """Create backup of file"""
         try:
             if file_path:
                 filename = Path(file_path).name
                 backup_file = self.backup_dir / f"{filename}.backup.{datetime.now().timestamp()}"
                 with open(backup_file, 'w', encoding='utf-8') as f:
                     f.write(content)
-                # Keep only last 5 backups per file
                 self.cleanup_old_backups(filename)
         except Exception as e:
             print(f"Error creating backup: {e}")
 
     def cleanup_old_backups(self, filename):
-        """Keep only last 5 backups per file"""
         try:
             backups = sorted(self.backup_dir.glob(f"{filename}.backup.*"))
             for backup in backups[:-5]:
@@ -197,76 +181,10 @@ class AutosaveManager(QObject):
             print(f"Error cleaning backups: {e}")
 
     def get_backups(self, filename):
-        """Get list of backups for a file"""
         try:
             return sorted(self.backup_dir.glob(f"{filename}.backup.*"), reverse=True)
         except:
             return []
-
-
-# ===================== THEME MANAGER =====================
-class ThemeManager:
-    """Manage application themes (light, dark, custom)"""
-
-    THEMES = {
-        "dark": {
-            "bg": "#0f0f1e",
-            "fg": "#e0e0e6",
-            "accent": "#6366f1",
-            "button": "#0078D4"
-        },
-        "light": {
-            "bg": "#f5f5f5",
-            "fg": "#1a1a1a",
-            "accent": "#0078D4",
-            "button": "#0078D4"
-        },
-        "highcontrast": {
-            "bg": "#000000",
-            "fg": "#ffffff",
-            "accent": "#ffff00",
-            "button": "#0078D4"
-        }
-    }
-
-    @staticmethod
-    def get_stylesheet(theme_name="dark"):
-        """Get stylesheet for theme"""
-        theme = ThemeManager.THEMES.get(theme_name, ThemeManager.THEMES["dark"])
-        return f"""
-            QMainWindow, QDialog {{
-                background-color: {theme['bg']};
-                color: {theme['fg']};
-            }}
-            QTextEdit {{
-                background-color: {theme['bg']};
-                color: {theme['fg']};
-                border: 1px solid {theme['accent']};
-                border-radius: 4px;
-            }}
-            QPushButton {{
-                background-color: {theme['button']};
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-            }}
-            QMenuBar {{
-                background-color: {theme['bg']};
-                color: {theme['fg']};
-            }}
-            QTabWidget {{
-                background-color: {theme['bg']};
-            }}
-            QTabBar::tab {{
-                background-color: {theme['accent']};
-                color: white;
-                padding: 6px 20px;
-            }}
-            QTabBar::tab:selected {{
-                background-color: {theme['button']};
-            }}
-        """
 
 
 # ===================== ADVANCED ENCRYPTION =====================
@@ -275,7 +193,6 @@ class EncryptionManager:
 
     @staticmethod
     def get_encryption_methods():
-        """Get available encryption methods"""
         return {
             "AES-256-PBKDF2": "AES-256 with PBKDF2 (Standard)",
             "AES-256-Argon2": "AES-256 with Argon2 (Recommended)",
@@ -284,10 +201,9 @@ class EncryptionManager:
 
     @staticmethod
     def encrypt_with_method(data, password, method="AES-256-PBKDF2"):
-        """Encrypt data with specified method"""
         try:
-            from cryptography.hazmat.primitives import hashes
-            from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
+            from cryptography.hazmat.primitives import hashes, padding
+            from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
             from cryptography.hazmat.primitives.kdf.argon2 import Argon2
             from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
             from cryptography.hazmat.backends import default_backend
@@ -296,18 +212,22 @@ class EncryptionManager:
             salt = os.urandom(16)
 
             if method == "AES-256-PBKDF2":
-                kdf = PBKDF2(hashes.SHA256(), salt, 100000, default_backend())
+                kdf = PBKDF2HMAC(
+                    algorithm=hashes.SHA256(),
+                    length=32,
+                    salt=salt,
+                    iterations=100_000,
+                    backend=default_backend()
+                )
                 key = kdf.derive(password.encode())
             elif method == "AES-256-Argon2":
-                kdf = Argon2(salt, time_cost=2, memory_cost=512, parallelism=2)
+                kdf = Argon2(time_cost=2, memory_cost=512, parallelism=2, hash_len=32)
                 key = kdf.derive(password.encode())
 
             iv = os.urandom(16)
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), default_backend())
             encryptor = cipher.encryptor()
 
-            # Add padding
-            from cryptography.hazmat.primitives import padding
             padder = padding.PKCS7(128).padder()
             padded_data = padder.update(data.encode()) + padder.finalize()
 
@@ -328,56 +248,45 @@ class SearchReplaceDialog(QDialog):
         self.setup_ui()
 
     def setup_ui(self):
-        """Setup dialog UI"""
         layout = QVBoxLayout(self)
-
-        # Search field
         search_layout = QHBoxLayout()
         search_layout.addWidget(QLabel("Find:"))
         self.search_input = QLineEdit()
         search_layout.addWidget(self.search_input)
         layout.addLayout(search_layout)
 
-        # Replace field
         replace_layout = QHBoxLayout()
         replace_layout.addWidget(QLabel("Replace:"))
         self.replace_input = QLineEdit()
         replace_layout.addWidget(self.replace_input)
         layout.addLayout(replace_layout)
 
-        # Options
         self.case_sensitive = QCheckBox("Case Sensitive")
         self.whole_words = QCheckBox("Whole Words Only")
         self.regex = QCheckBox("Regular Expression")
-
         options_layout = QHBoxLayout()
         options_layout.addWidget(self.case_sensitive)
         options_layout.addWidget(self.whole_words)
         options_layout.addWidget(self.regex)
         layout.addLayout(options_layout)
 
-        # Results
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
         self.results_text.setMaximumHeight(120)
         layout.addWidget(QLabel("Results:"))
         layout.addWidget(self.results_text)
 
-        # Buttons
         btn_layout = QHBoxLayout()
         find_btn = QPushButton("Find All")
         replace_btn = QPushButton("Replace All")
         close_btn = QPushButton("Close")
-
         btn_layout.addWidget(find_btn)
         btn_layout.addWidget(replace_btn)
         btn_layout.addStretch()
         btn_layout.addWidget(close_btn)
-
         layout.addLayout(btn_layout)
 
         close_btn.clicked.connect(self.accept)
-
 
 # ===================== CUSTOM SHORTCUTS MANAGER =====================
 class ShortcutsDialog(QDialog):
@@ -508,7 +417,6 @@ class TabManager(QTabWidget):
         self.tab_files = {}
 
         # ---------------- Managers ----------------
-        from utils.advanced_features import AutosaveManager, RecentFilesManager
         self.autosave_manager = AutosaveManager(interval_seconds=autosave_interval)
         self.recent_files_manager = RecentFilesManager()
         self.autosave_manager.autosave_triggered.connect(self.autosave_all_tabs)
@@ -664,7 +572,6 @@ class TabManager(QTabWidget):
 
     def apply_theme_to_all_tabs(self, theme_name="dark"):
         """Apply stylesheet/theme to all tabs' editors"""
-        from utils.advanced_features import ThemeManager
-        stylesheet = ThemeManager.get_stylesheet(theme_name)
+        stylesheet = ""
         for editor in self.get_all_editors():
             editor.setStyleSheet(stylesheet)

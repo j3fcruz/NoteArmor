@@ -1,16 +1,18 @@
 # dialog/license_dialog.py
 
 """
-License dialog for Secure Notepad Pro (MIT and GPL)
+License dialog for Secure Notepad Pro (MIT and GPL) – PySide6 version
 """
 
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QTextEdit, QFrame, QTabWidget, QWidget
+    QTextEdit, QFrame, QTabWidget, QWidget, QApplication, QFileDialog, QMessageBox
 )
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-from config.app_config import APP_NAME, APP_VERSION, APP_DEVELOPER, AUTHOR
+from PySide6.QtGui import QFont, QIcon
+from PySide6.QtCore import Qt
+from config.app_config import APP_NAME, APP_DEVELOPER, LICENSE_ICON_PATH
+from resources import icons_rc
+_ = icons_rc
 
 
 class LicenseDialog(QDialog):
@@ -20,6 +22,7 @@ class LicenseDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(f"{APP_NAME} - Open Source Licenses")
         self.setFixedSize(850, 850)
+        self.setWindowIcon(QIcon(LICENSE_ICON_PATH))
         self.setModal(True)
 
         self.setup_ui()
@@ -32,27 +35,20 @@ class LicenseDialog(QDialog):
 
         # Header
         header_label = QLabel("Open Source Licenses")
-        header_font = QFont()
-        header_font.setPointSize(18)
-        header_font.setBold(True)
-        header_label.setFont(header_font)
+        header_label.setFont(QFont("", 18, QFont.Bold))
         header_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(header_label)
 
         # Subtitle
         subtitle_label = QLabel(f"{APP_NAME} Pro - Proudly Built with Open Source")
-        subtitle_font = QFont()
-        subtitle_font.setPointSize(11)
-        subtitle_label.setFont(subtitle_font)
+        subtitle_label.setFont(QFont("", 11))
         subtitle_label.setAlignment(Qt.AlignCenter)
-        subtitle_label.setStyleSheet("color: #999aab;")
         layout.addWidget(subtitle_label)
 
         # Separator
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
-        separator.setStyleSheet("color: #3d3d5c;")
         layout.addWidget(separator)
 
         # License Introduction
@@ -63,7 +59,6 @@ class LicenseDialog(QDialog):
             "We are committed to respecting the rights of developers and maintaining transparency. "
             "Below are the licenses governing this software and its components."
         )
-        intro_label.setStyleSheet("color: #b0b0c0; font-size: 12px; padding: 10px 0px;")
         layout.addWidget(intro_label)
 
         # Tab Widget
@@ -78,9 +73,6 @@ class LicenseDialog(QDialog):
             "📋 MIT License: Permissive license allowing commercial and private use with minimal restrictions.\n"
             "📋 GPL License: Copyleft license ensuring derivative works remain open source.\n"
             "For more information, visit: opensource.org/licenses"
-        )
-        summary_label.setStyleSheet(
-            "color: #999aab; font-size: 11px; padding: 12px; background-color: #16213e; border-radius: 6px; border-left: 4px solid #6366f1;"
         )
         layout.addWidget(summary_label)
 
@@ -109,28 +101,6 @@ class LicenseDialog(QDialog):
 
         layout.addLayout(button_layout)
 
-        # Style
-        self.setStyleSheet("""
-            QDialog { background-color: #0f0f1e; color: #e0e0e6; }
-            QTextEdit { background-color: #16213e; color: #dcdcdc; border: 1px solid #3d3d5c; border-radius: 8px; padding: 15px; font-family: "Consolas", monospace; font-size: 11px; line-height: 1.6; }
-            QTextEdit:focus { border: 2px solid #6366f1; background-color: #1a1a2e; }
-            QPushButton { background-color: #0078D4; color: #ffffff; border: none; border-radius: 6px; padding: 10px 20px; font-weight: bold; font-size: 12px; }
-            QPushButton:hover { background-color: #106ebe; }
-            QPushButton:pressed { background-color: #005a9e; }
-            QLabel { color: #dcdcdc; font-size: 12px; }
-            QTabWidget::pane { border: 1px solid #3d3d5c; background-color: #0f0f1e; }
-            QTabBar::tab { background-color: #16213e; color: #b0b0c0; padding: 10px 26px; border: 1px solid #3d3d5c; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; margin-right: 2px; font-size: 12px; font-weight: 500; }
-            QTabBar::tab:selected { background-color: #6366f1; color: #ffffff; border: 1px solid #6366f1; }
-            QTabBar::tab:hover:!selected { background-color: #3d3d5c; }
-            QScrollBar:vertical { background-color: #16213e; width: 12px; border-radius: 6px; }
-            QScrollBar::handle:vertical { background-color: #3d3d5c; border-radius: 6px; min-height: 20px; }
-            QScrollBar::handle:vertical:hover { background-color: #6366f1; }
-            QScrollBar:horizontal { background-color: #16213e; height: 12px; border-radius: 6px; }
-            QScrollBar::handle:horizontal { background-color: #3d3d5c; border-radius: 6px; min-width: 20px; }
-            QScrollBar::handle:horizontal:hover { background-color: #6366f1; }
-            QScrollBar::add-line, QScrollBar::sub-line { border: none; background: none; }
-        """)
-
     def setup_tabs(self):
         """Setup license tabs"""
         # MIT License Tab
@@ -140,7 +110,6 @@ class LicenseDialog(QDialog):
 
         mit_header = QLabel("MIT License")
         mit_header.setFont(QFont("", 13, QFont.Bold))
-        mit_header.setStyleSheet("color: #6366f1; margin-bottom: 10px;")
         mit_layout.addWidget(mit_header)
 
         mit_desc = QLabel(
@@ -148,7 +117,6 @@ class LicenseDialog(QDialog):
             "It is one of the most permissive licenses available, allowing you to:"
         )
         mit_desc.setWordWrap(True)
-        mit_desc.setStyleSheet("color: #b0b0c0; font-size: 11px; margin-bottom: 10px;")
         mit_layout.addWidget(mit_desc)
 
         mit_features = QLabel(
@@ -157,9 +125,6 @@ class LicenseDialog(QDialog):
             "✓ Distribute the software\n"
             "✓ Use for private purposes\n\n"
             "⚠ Include a copy of the license and copyright notice"
-        )
-        mit_features.setStyleSheet(
-            "color: #dcdcdc; font-size: 11px; padding: 10px; background-color: #16213e; border-radius: 6px; border-left: 3px solid #6366f1;"
         )
         mit_layout.addWidget(mit_features)
 
@@ -177,7 +142,6 @@ class LicenseDialog(QDialog):
 
         gpl_header = QLabel("GPL v3 License")
         gpl_header.setFont(QFont("", 13, QFont.Bold))
-        gpl_header.setStyleSheet("color: #6366f1; margin-bottom: 10px;")
         gpl_layout.addWidget(gpl_header)
 
         gpl_desc = QLabel(
@@ -185,7 +149,6 @@ class LicenseDialog(QDialog):
             "It ensures that:"
         )
         gpl_desc.setWordWrap(True)
-        gpl_desc.setStyleSheet("color: #b0b0c0; font-size: 11px; margin-bottom: 10px;")
         gpl_layout.addWidget(gpl_desc)
 
         gpl_features = QLabel(
@@ -194,9 +157,6 @@ class LicenseDialog(QDialog):
             "✓ Derivative works must also be GPL-licensed\n"
             "✓ Changes must be documented\n\n"
             "⚠ Derivative works must use the same license"
-        )
-        gpl_features.setStyleSheet(
-            "color: #dcdcdc; font-size: 11px; padding: 10px; background-color: #16213e; border-radius: 6px; border-left: 3px solid #6366f1;"
         )
         gpl_layout.addWidget(gpl_features)
 
@@ -214,7 +174,6 @@ class LicenseDialog(QDialog):
 
         third_header = QLabel("Third-Party Dependencies")
         third_header.setFont(QFont("", 13, QFont.Bold))
-        third_header.setStyleSheet("color: #6366f1; margin-bottom: 10px;")
         third_layout.addWidget(third_header)
 
         third_text = QTextEdit()
@@ -224,20 +183,10 @@ class LicenseDialog(QDialog):
 
         self.tab_widget.addTab(third_widget, "Third-Party")
 
-        # ------------------------
-        # Adjust tab width to fit labels
-        # ------------------------
-        self.tab_widget.setStyleSheet("""
-            QTabBar::tab {
-                min-width: 130px;  /* Adjust this width as needed */
-            }
-        """)
-
     # -----------------------
     # License Texts
     # -----------------------
     def get_mit_license(self):
-        """Get MIT License text"""
         return f"""MIT License
 
 Copyright (c) 2024 {APP_DEVELOPER}
@@ -261,7 +210,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 
     def get_gpl_license(self):
-        """Get GPL v3 License summary"""
         return f"""GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
@@ -305,7 +253,6 @@ directly or secondarily liable for infringement under applicable copyright law.
 For detailed information, please visit: https://www.gnu.org/licenses/gpl-3.0.html"""
 
     def get_third_party_licenses(self):
-        """Get third-party dependencies and licenses"""
         return f"""THIRD-PARTY DEPENDENCIES AND LICENSES
 
 1. PyQt5
@@ -352,8 +299,6 @@ If you believe there is a licensing issue, please report it to: {APP_DEVELOPER}"
     # -----------------------
     def copy_current_license(self):
         """Copy current license text to clipboard"""
-        from PyQt5.QtWidgets import QApplication
-
         current_widget = self.tab_widget.currentWidget()
         text_edit = current_widget.findChild(QTextEdit)
         if text_edit:
@@ -362,8 +307,6 @@ If you believe there is a licensing issue, please report it to: {APP_DEVELOPER}"
 
     def download_licenses(self):
         """Download license files"""
-        from PyQt5.QtWidgets import QFileDialog, QMessageBox
-
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             "Save License Files",

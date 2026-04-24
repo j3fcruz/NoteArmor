@@ -6,7 +6,7 @@ Logging utilities for the application
 import os
 import logging
 import datetime
-from utils.path_utils import PathResolver
+from utils._path_utils import PathResolver
 from config.app_config import APP_NAME
 
 class Logger:

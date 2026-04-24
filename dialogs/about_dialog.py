@@ -1,518 +1,305 @@
 """
-about_dialog.py
-================
+dialogs/about_dialog.py
+NoteArmor — Personal Use Edition
+About dialog (simplified, corrected for Free Edition).
 
-About Dialog for Secure Notepad Pro v2.0.0
+REMOVED vs Pro:
+    - Libraries tab       — unnecessary for end users
+    - Support tab         — links moved to Help menu in main window
+    - Donate references   — not part of personal use edition UI
+    - Enterprise/Pro feature descriptions
 
-Displays version, author info, website, license, and support links.
-
-Author      : Marco Polo (PatronHub)
-Website     : https://patronhubdevs.online
-GitHub      : https://github.com/j3fcruz
-Ko-fi       : https://ko-fi.com/marcopolo55681
-Created     : 2025-11-10
-License     : MIT License
+PRESERVED:
+    - Header with app icon, name, version
+    - About tab (corrected features for Free Edition)
+    - App Info tab (corrected: PySide6, platform, python version)
+    - License tab (PU-NC v1.0 full text)
 """
 
+import sys
 import webbrowser
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QTextEdit, QFrame
+    QTextEdit, QFrame, QTabWidget, QWidget
 )
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import Qt
-from utils.path_utils import PathResolver
-from config.app_config import APP_NAME, APP_VERSION, APP_DEVELOPER, AUTHOR
-from utils.icon_manager import load_icon   # ✅ Correct import
+from PySide6.QtGui import QIcon, QFont
+from PySide6.QtCore import Qt
+
+from config.app_config import (
+    APP_NAME, APP_VERSION, APP_DEVELOPER, AUTHOR,
+    ABOUT_ICON_PATH, HOMEPAGE, GITHUB_ID
+)
+from utils.icon_manager import load_icon
+from resources import icons_rc  # noqa: F401
+_ = icons_rc
+
+_PUNC_LICENSE = """\
+NoteArmor Personal Use and Non-Commercial License (PU-NC)
+Version 1.0
+Copyright (c) 2026 PatronHub Devs
+
+1. DEFINITIONS
+"Software" refers to the NoteArmor application, including all source code,
+binaries, and associated files.
+"Author" refers to PatronHub Devs and its contributors.
+"Personal Use" means use by an individual for private, non-commercial purposes.
+"Commercial Use" includes any use intended for commercial advantage, monetary
+compensation, or business operations.
+
+2. GRANT OF LICENSE
+Permission is hereby granted to any individual to:
+  - Use the Software for personal, non-commercial purposes
+  - View and study the source code
+  - Modify the Software for personal use only
+
+3. RESTRICTIONS
+You are NOT permitted to:
+  - Use the Software for any commercial purpose
+  - Sell, sublicense, or distribute the Software (modified or unmodified)
+  - Offer the Software as a service (SaaS, hosted, or cloud-based)
+  - Rebrand, rename, or claim the Software as your own
+  - Create derivative works intended for public distribution
+  - Remove or alter any copyright or attribution notices
+
+4. DISTRIBUTION
+Redistribution of the Software, in whole or in part, is strictly prohibited
+without explicit written permission from the Author.
+
+5. INTELLECTUAL PROPERTY
+All rights, title, and interest in the Software remain the exclusive property
+of the Author. This license does not grant any ownership rights.
+
+6. TERMINATION
+This license is automatically terminated if you violate any of its terms.
+Upon termination, you must cease all use of the Software and delete all copies.
+
+7. DISCLAIMER OF WARRANTY
+The Software is provided "AS IS", without warranty of any kind, express or
+implied, including but not limited to:
+  - Fitness for a particular purpose
+  - Non-infringement
+  - Security or reliability
+The Author is not liable for any damages arising from the use of the Software.
+
+8. LIMITATION OF LIABILITY
+In no event shall the Author be liable for any claim, damages, or other
+liability arising from:
+  - Use of the Software
+  - Inability to use the Software
+  - Data loss or corruption
+
+9. GOVERNING LAW
+This license shall be governed by and interpreted in accordance with
+applicable laws.
+
+10. CONTACT
+For permissions, licensing inquiries, or commercial use requests, contact:
+Email: contact@patronhubdevs.online
+
+By using this Software, you agree to the terms of this license.
+"""
 
 
 class AboutDialog(QDialog):
-    """About dialog showing application information."""
+    """About dialog for NoteArmor Personal Use Edition."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(f"About {APP_NAME}")
-        self.setFixedSize(520, 420)
+        self.setFixedSize(560, 480)
         self.setModal(True)
-        self.setup_ui()
+        self.setWindowIcon(QIcon(ABOUT_ICON_PATH))
+        self._build()
 
-    def setup_ui(self):
-        """Setup the dialog UI."""
+    def _build(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(20, 20, 20, 16)
         layout.setSpacing(12)
 
-        # --- Header section ---
-        header_frame = QFrame()
-        header_layout = QHBoxLayout(header_frame)
-        header_layout.setContentsMargins(0, 0, 0, 0)
-        header_layout.setSpacing(12)
+        # ── Header ────────────────────────────────────────────────────────────
+        header = QFrame()
+        h_row  = QHBoxLayout(header)
+        h_row.setContentsMargins(0, 0, 0, 0)
+        h_row.setSpacing(14)
 
-        # App icon
-        icon_label = QLabel()
-        icon_label.setFixedSize(72, 72)
-
-        app_icon = load_icon("app_icon.png")  # ✅ Use function directly
-        if not app_icon.isNull():
-            icon_label.setPixmap(app_icon.pixmap(64, 64))
+        icon_lbl = QLabel()
+        icon_lbl.setFixedSize(64, 64)
+        app_icon = load_icon(ABOUT_ICON_PATH)
+        if app_icon and not app_icon.isNull():
+            icon_lbl.setPixmap(app_icon.pixmap(64, 64))
         else:
-            icon_label.setStyleSheet("""
-                QLabel {
-                    background-color: #0078D4;
-                    border-radius: 36px;
-                    color: white;
-                    font-size: 24px;
-                    font-weight: bold;
-                }
-            """)
-            icon_label.setAlignment(Qt.AlignCenter)
-            icon_label.setText("SN")  # Secure Notepad initials
+            icon_lbl.setStyleSheet(
+                "QLabel { background:#1a73e8; border-radius:32px;"
+                " color:white; font-size:22px; font-weight:bold; }"
+            )
+            icon_lbl.setAlignment(Qt.AlignCenter)
+            icon_lbl.setText("NA")
+        h_row.addWidget(icon_lbl)
 
-        header_layout.addWidget(icon_label)
+        title_col = QVBoxLayout()
+        title_col.setSpacing(2)
+        name_lbl = QLabel(APP_NAME)
+        name_lbl.setFont(QFont("Segoe UI", 16, QFont.Bold))
+        title_col.addWidget(name_lbl)
 
-        # App title and version
-        title_layout = QVBoxLayout()
-        title_label = QLabel(APP_NAME)
-        title_font = QFont("Segoe UI", 18, QFont.Bold)
-        title_label.setFont(title_font)
-        title_layout.addWidget(title_label)
+        ver_lbl = QLabel(f"Version {APP_VERSION}  —  Personal Use Edition")
+        ver_lbl.setStyleSheet("color:#aaa; font-size:11px;")
+        title_col.addWidget(ver_lbl)
 
-        version_label = QLabel(f"Version {APP_VERSION}")
-        version_label.setStyleSheet("color: #aaaaaa; font-size: 12px;")
-        title_layout.addWidget(version_label)
+        dev_lbl = QLabel(f"{APP_DEVELOPER}")
+        dev_lbl.setStyleSheet("color:#888; font-size:10px;")
+        title_col.addWidget(dev_lbl)
 
-        header_layout.addLayout(title_layout)
-        header_layout.addStretch()
-        layout.addWidget(header_frame)
+        h_row.addLayout(title_col)
+        h_row.addStretch()
+        layout.addWidget(header)
 
-        # --- Separator ---
-        separator = QFrame()
-        separator.setFrameShape(QFrame.HLine)
-        separator.setFrameShadow(QFrame.Sunken)
-        layout.addWidget(separator)
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
+        layout.addWidget(sep)
 
-        # --- Description section ---
-        description = QTextEdit()
-        description.setReadOnly(True)
-        description.setMaximumHeight(180)
-        description.setHtml("""
-        <h3>Secure Notepad Pro</h3>
-        <p><b>Secure Notepad Pro</b> is an enterprise-grade, privacy-focused text editor 
-        designed for professionals who need encrypted, organized, and visually elegant note-taking.</p>
-        <ul>
-            <li><b>Encryption</b> — Built-in AES-GCM encryption for sensitive notes.</li>
-            <li><b>Auto Theme</b> — Adapts to system dark/light mode automatically.</li>
-            <li><b>High-DPI Support</b> — Scales beautifully on modern 4K displays.</li>
-            <li><b>Modular Design</b> — Cleanly separated UI, themes, and logic for scalability.</li>
-        </ul>
-        <p>Secure Notepad Pro combines strong encryption with a minimalist design, 
-        giving you both security and elegance in one lightweight app.</p>
-        """)
-        layout.addWidget(description)
+        # ── Tabs ──────────────────────────────────────────────────────────────
+        tabs = QTabWidget()
+        tabs.addTab(self._tab_about(),    "About")
+        tabs.addTab(self._tab_app_info(), "App Info")
+        tabs.addTab(self._tab_license(),  "License")
+        layout.addWidget(tabs, 1)
 
-        # --- Footer / Credits ---
-        credits_label = QLabel()
-        credits_label.setWordWrap(True)
-        credits_label.setText(
-            f"Developed by {AUTHOR} – {APP_DEVELOPER}\n\n"
-            f"© 2025 {APP_NAME}. All rights reserved.\n"
-            "Powered by PyQt5, Python 3, and modern UI/UX practices."
-        )
-        credits_label.setStyleSheet("color: #aaaaaa; font-size: 11px;")
-        layout.addWidget(credits_label)
-
-
-        # --- Support Buttons Section ---
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setSpacing(10)
-
-        # Website Button
-        website_btn = QPushButton("PatronHubDevs")
-        website_btn.clicked.connect(lambda: webbrowser.open("https://patronhubdevs.online"))
-        buttons_layout.addWidget(website_btn)
-
-        # GitHub Button
-        github_btn = QPushButton("GitHub")
-        github_btn.clicked.connect(lambda: webbrowser.open("https://github.com/j3fcruz"))
-        buttons_layout.addWidget(github_btn)
-
-        # Ko-fi Button
-        kofi_btn = QPushButton("My Ko-fi")
-        kofi_btn.clicked.connect(lambda: webbrowser.open("https://ko-fi.com/marcopolo55681"))
-        buttons_layout.addWidget(kofi_btn)
-
-        # OK Button
+        # ── Footer ────────────────────────────────────────────────────────────
+        footer = QHBoxLayout()
+        footer.addStretch()
         ok_btn = QPushButton("OK")
         ok_btn.setFixedWidth(80)
+        ok_btn.setDefault(True)
         ok_btn.clicked.connect(self.accept)
-        buttons_layout.addWidget(ok_btn)
+        footer.addWidget(ok_btn)
+        layout.addLayout(footer)
 
-        layout.addLayout(buttons_layout)
+    # ── About tab ─────────────────────────────────────────────────────────────
 
-        # --- Final Polish ---
-        self.setStyleSheet("""
-            /* Main Dialog */
-            QDialog {
-                background-color: #0f0f1e;
-                color: #e0e0e6;
-            }
+    def _tab_about(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.setContentsMargins(14, 14, 14, 14)
+        l.setSpacing(10)
 
-            /* Text Edit */
-            QTextEdit {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                padding: 8px;
-                font-family: "Segoe UI", "Consolas", monospace;
-                font-size: 12px;
-            }
-            QTextEdit:focus {
-                border: 2px solid #6366f1;
-                background-color: #16213e;
-            }
-
-            /* Line Edit */
-            QLineEdit {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 12px;
-            }
-            QLineEdit:focus {
-                border: 2px solid #6366f1;
-                background-color: #16213e;
-            }
-
-            /* Push Button */
-            QPushButton {
-                background-color: #0078D4;
-                color: #ffffff;
-                border: none;
-                border-radius: 6px;
-                padding: 10px 20px;
-                font-weight: bold;
-                font-size: 11px;
-            }
-            QPushButton:hover {
-                background-color: #106ebe;
-            }
-            QPushButton:pressed {
-                background-color: #005a9e;
-            }
-
-            /* Labels */
-            QLabel {
-                color: #b0b0c0;
-                font-size: 12px;
-            }
-
-            /* Combo Box */
-            QComboBox {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 12px;
-            }
-            QComboBox:focus {
-                border: 2px solid #6366f1;
-            }
-            QComboBox::drop-down {
-                border: none;
-                background-color: #16213e;
-            }
-            QComboBox::down-arrow {
-                image: url(noimg);
-                width: 12px;
-                height: 12px;
-            }
-
-            /* Combo Box Item List */
-            QComboBox QAbstractItemView {
-                background-color: #16213e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                selection-background-color: #6366f1;
-                selection-color: #ffffff;
-                font-size: 12px;
-            }
-
-            /* Spin Box */
-            QSpinBox, QDoubleSpinBox {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 12px;
-            }
-            QSpinBox:focus, QDoubleSpinBox:focus {
-                border: 2px solid #6366f1;
-            }
-
-            /* Checkbox */
-            QCheckBox {
-                color: #b0b0c0;
-                spacing: 8px;
-                font-size: 12px;
-            }
-            QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-                border-radius: 4px;
-                border: 1px solid #3d3d5c;
-                background-color: #1a1a2e;
-            }
-            QCheckBox::indicator:checked {
-                background-color: #6366f1;
-                border: 1px solid #6366f1;
-            }
-
-            /* Radio Button */
-            QRadioButton {
-                color: #b0b0c0;
-                spacing: 8px;
-                font-size: 12px;
-            }
-            QRadioButton::indicator {
-                width: 18px;
-                height: 18px;
-                border-radius: 9px;
-                border: 1px solid #3d3d5c;
-                background-color: #1a1a2e;
-            }
-            QRadioButton::indicator:checked {
-                background-color: #6366f1;
-                border: 1px solid #6366f1;
-            }
-
-            /* Group Box */
-            QGroupBox {
-                color: #b0b0c0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                margin-top: 10px;
-                padding-top: 10px;
-                font-weight: bold;
-                font-size: 13px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 3px 0 3px;
-            }
-
-            /* Scroll Bar */
-            QScrollBar:vertical {
-                background-color: #16213e;
-                width: 12px;
-                border-radius: 6px;
-            }
-            QScrollBar::handle:vertical {
-                background-color: #3d3d5c;
-                border-radius: 6px;
-                min-height: 20px;
-            }
-            QScrollBar::handle:vertical:hover {
-                background-color: #6366f1;
-            }
-            QScrollBar:horizontal {
-                background-color: #16213e;
-                height: 12px;
-                border-radius: 6px;
-            }
-            QScrollBar::handle:horizontal {
-                background-color: #3d3d5c;
-                border-radius: 6px;
-                min-width: 20px;
-            }
-            QScrollBar::handle:horizontal:hover {
-                background-color: #6366f1;
-            }
-            QScrollBar::add-line, QScrollBar::sub-line {
-                border: none;
-                background: none;
-            }
-
-            /* Menu Bar */
-            QMenuBar {
-                background-color: #0f0f1e;
-                color: #b0b0c0;
-                border-bottom: 1px solid #3d3d5c;
-                font-size: 12px;
-            }
-            QMenuBar::item:selected {
-                background-color: #16213e;
-            }
-
-            /* Menu */
-            QMenu {
-                background-color: #16213e;
-                color: #b0b0c0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                font-size: 12px;
-            }
-            QMenu::item:selected {
-                background-color: #6366f1;
-                color: #ffffff;
-            }
-
-            /* Table Widget */
-            QTableWidget {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                gridline-color: #3d3d5c;
-                font-size: 12px;
-            }
-            QTableWidget::item {
-                padding: 4px;
-                border: none;
-            }
-            QTableWidget::item:selected {
-                background-color: #6366f1;
-                color: #ffffff;
-            }
-
-            /* Table Header */
-            QHeaderView::section {
-                background-color: #16213e;
-                color: #b0b0c0;
-                padding: 8px;
-                border: none;
-                border-right: 1px solid #3d3d5c;
-                border-bottom: 1px solid #3d3d5c;
-                font-weight: bold;
-                font-size: 12px;
-            }
-
-            /* Tree Widget */
-            QTreeWidget {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                gridline-color: #3d3d5c;
-                font-size: 12px;
-            }
-            QTreeWidget::item:selected {
-                background-color: #6366f1;
-                color: #ffffff;
-            }
-
-            /* Tab Widget */
-            QTabWidget::pane {
-                border: 1px solid #3d3d5c;
-                background-color: #0f0f1e;
-            }
-            QTabBar::tab {
-                background-color: #16213e;
-                color: #b0b0c0;
-                padding: 6px 20px;
-                border: 1px solid #3d3d5c;
-                border-bottom: none;
-                border-top-left-radius: 6px;
-                border-top-right-radius: 6px;
-                margin-right: 2px;
-            }
-            QTabBar::tab:selected {
-                background-color: #6366f1;
-                color: #ffffff;
-            }
-            QTabBar::tab:hover {
-                background-color: #3d3d5c;
-            }
-
-            /* Slider */
-            QSlider::groove:horizontal {
-                background-color: #3d3d5c;
-                height: 8px;
-                border-radius: 4px;
-                margin: 2px 0;
-            }
-            QSlider::handle:horizontal {
-                background-color: #6366f1;
-                width: 18px;
-                margin: -5px 0;
-                border-radius: 9px;
-            }
-            QSlider::handle:horizontal:hover {
-                background-color: #818cf8;
-            }
-
-            /* Progress Bar */
-            QProgressBar {
-                background-color: #16213e;
-                color: #b0b0c0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                text-align: center;
-                height: 24px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            QProgressBar::chunk {
-                background-color: #6366f1;
-                border-radius: 4px;
-            }
-
-            /* Plain Text Edit */
-            QPlainTextEdit {
-                background-color: #1a1a2e;
-                color: #c0c0d0;
-                border: 1px solid #3d3d5c;
-                border-radius: 6px;
-                padding: 8px;
-                font-family: "Segoe UI", "Consolas", monospace;
-                font-size: 12px;
-            }
-            QPlainTextEdit:focus {
-                border: 2px solid #6366f1;
-                background-color: #16213e;
-            }
-
-            /* Tooltip */
-            QToolTip {
-                background-color: #16213e;
-                color: #c0c0d0;
-                border: 2px solid #6366f1;
-                border-radius: 6px;
-                padding: 6px 10px;
-                font-size: 11px;
-                font-weight: 500;
-            }
-
-            /* Status Bar */
-            QStatusBar {
-                background-color: #0f0f1e;
-                color: #b0b0c0;
-                border-top: 1px solid #3d3d5c;
-                font-size: 11px;
-            }
-
-            /* Tool Bar */
-            QToolBar {
-                background-color: #0f0f1e;
-                border: none;
-                spacing: 6px;
-            }
-            QToolButton {
-                background-color: transparent;
-                color: #b0b0c0;
-                border: 1px solid transparent;
-                border-radius: 4px;
-                padding: 4px 8px;
-            }
-            QToolButton:hover {
-                background-color: #16213e;
-                border: 1px solid #3d3d5c;
-            }
-            QToolButton:pressed {
-                background-color: #6366f1;
-                color: #ffffff;
-            }
+        desc = QTextEdit()
+        desc.setReadOnly(True)
+        desc.setHtml(f"""
+        <style>
+          body {{ font-family: Segoe UI, sans-serif; font-size: 13px; }}
+          h4   {{ margin-bottom: 4px; color: #4a90d9; }}
+          li   {{ margin-bottom: 3px; }}
+        </style>
+        <h4>{APP_NAME}</h4>
+        <p>
+          A privacy-first encrypted notepad built for personal use.
+          Write, encrypt, and protect your notes with a strong password —
+          only you can decrypt them.
+        </p>
+        <h4>Features</h4>
+        <ul>
+          <li><b>Password Encryption</b> — Notes saved with Fernet
+              (AES-128-CBC + HMAC-SHA256), key derived via PBKDF2-HMAC-SHA256.</li>
+          <li><b>Plaintext Mode</b> — Save unencrypted <code>.txt</code> files when privacy
+              is not needed.</li>
+          <li><b>Multi-Tab</b> — Work on several notes simultaneously.</li>
+          <li><b>Autosave</b> — Modified open files are saved automatically every minute.</li>
+          <li><b>Zoom Support</b> — Ctrl + scroll or keyboard shortcuts to adjust font size.</li>
+          <li><b>Lightweight</b> — Single-theme, minimal UI with no bloat.</li>
+        </ul>
+        <p style="color:#888; font-size:11px;">
+          © 2026 {APP_DEVELOPER}. Personal use only — see License tab.
+        </p>
         """)
+        l.addWidget(desc)
+        return w
+
+    # ── App Info tab ──────────────────────────────────────────────────────────
+
+    def _tab_app_info(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.setContentsMargins(14, 14, 14, 14)
+        l.setSpacing(10)
+
+        rows = [
+            ("Application",  APP_NAME),
+            ("Version",      APP_VERSION),
+            ("Edition",      "Personal Use (Free)"),
+            ("Developer",    AUTHOR),
+            ("Organization", APP_DEVELOPER),
+            ("Python",       f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"),
+            ("GUI Framework","PySide6 (Qt6)"),
+            ("Platform",     sys.platform.upper()),
+            ("License",      "PU-NC v1.0 — Non-Commercial"),
+            ("Contact",      "contact@patronhubdevs.online"),
+        ]
+
+        for label, value in rows:
+            self._info_row(l, label, value)
+
+        l.addStretch()
+
+        link_row = QHBoxLayout()
+        for text, url in [
+            ("🌐 Website", HOMEPAGE),
+            ("💻 GitHub",  GITHUB_ID),
+        ]:
+            btn = QPushButton(text)
+            btn.setFixedHeight(32)
+            btn.clicked.connect(lambda _, u=url: webbrowser.open(u))
+            link_row.addWidget(btn)
+        link_row.addStretch()
+        l.addLayout(link_row)
+
+        return w
+
+    def _info_row(self, layout, label_text, value_text):
+        row = QHBoxLayout()
+        row.setSpacing(10)
+
+        lbl = QLabel(f"{label_text}:")
+        lbl.setFont(QFont("Segoe UI", 9, QFont.Bold))
+        lbl.setFixedWidth(120)
+
+        val = QLabel(value_text)
+        val.setStyleSheet("color:#4a90d9; font-size:10px;")
+        val.setWordWrap(True)
+
+        row.addWidget(lbl)
+        row.addWidget(val)
+        layout.addLayout(row)
+
+    # ── License tab ───────────────────────────────────────────────────────────
+
+    def _tab_license(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.setContentsMargins(14, 14, 14, 14)
+        l.setSpacing(8)
+
+        hdr = QLabel("PU-NC License v1.0 — Personal Use & Non-Commercial")
+        hdr.setFont(QFont("Segoe UI", 10, QFont.Bold))
+        l.addWidget(hdr)
+
+        txt = QTextEdit()
+        txt.setReadOnly(True)
+        txt.setFont(QFont("Consolas", 9))
+        txt.setPlainText(_PUNC_LICENSE)
+        l.addWidget(txt)
+
+        copy_btn = QPushButton("📋 Copy License Text")
+        copy_btn.setFixedHeight(32)
+        copy_btn.clicked.connect(lambda: self._copy_license(txt.toPlainText()))
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        btn_row.addWidget(copy_btn)
+        l.addLayout(btn_row)
+
+        return w
+
+    def _copy_license(self, text):
+        from PySide6.QtWidgets import QApplication
+        QApplication.clipboard().setText(text)

@@ -1,40 +1,47 @@
 """
- modules/tab_manager.py
+modules/tab_manager.py
 Manages multiple text editor tabs with metadata tracking.
+(PySide6 version)
 """
 
-from PyQt5.QtWidgets import QTabWidget, QMessageBox
-from PyQt5.QtCore import QObject
+from PySide6.QtWidgets import QTabWidget, QMessageBox
+from PySide6.QtCore import QObject
 from utils.editor import EnhancedTextEditor
 
-class TabManager(QObject):
+
+class TabManager_(QObject):
     """Handles multi-tab operations and metadata tracking."""
 
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+
         self.tabs = QTabWidget()
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
 
-        # --- Do NOT connect to status_manager here ---
+        # --- Status manager intentionally NOT connected here ---
         # self.tabs.currentChanged.connect(self.parent.status_manager.update_status_bar)
 
-        # Metadata per tab: {index: {"path": ..., "encrypted": ..., "password": ...}}
+        # Metadata per tab:
+        # {index: {"path": str | None, "encrypted": bool, "password": str | None}}
         self.tab_files = {}
 
-        # Default font size for zoom
+        # Default font size reference for zoom calculations
         self.default_font_size = 12
 
-    # --- Allow external connection to status_manager later ---
+    # -------------------------------------------------
+    # External Status Manager Wiring
+    # -------------------------------------------------
     def connect_status_manager(self, status_manager):
         self.tabs.currentChanged.connect(status_manager.update_status_bar)
 
+    # -------------------------------------------------
+    # Current State Helpers
+    # -------------------------------------------------
     def current_editor(self):
         editor = self.tabs.currentWidget()
-        if isinstance(editor, EnhancedTextEditor):
-            return editor
-        return None
+        return editor if isinstance(editor, EnhancedTextEditor) else None
 
     def current_tab_index(self):
         return self.tabs.currentIndex()
@@ -42,32 +49,50 @@ class TabManager(QObject):
     def current_tab_data(self):
         return self.tab_files.get(self.current_tab_index(), {})
 
+    # -------------------------------------------------
+    # Tab Creation
+    # -------------------------------------------------
     def new_tab(self, path=None, content="", encrypted=False, password=None):
         editor = EnhancedTextEditor()
         editor.setPlainText(content)
         editor.document().setModified(False)
 
-        # Connect editor signals to status_manager if available
+        # Connect editor signals to status manager (if available)
         if hasattr(self.parent, "status_manager"):
-            editor.cursorPositionChanged.connect(self.parent.status_manager.update_status_bar)
-            editor.textChanged.connect(self.parent.status_manager.update_status_bar)
+            editor.cursorPositionChanged.connect(
+                self.parent.status_manager.update_status_bar
+            )
+            editor.textChanged.connect(
+                self.parent.status_manager.update_status_bar
+            )
 
-        index = self.tabs.addTab(editor, path if path else "Untitled")
+        title = path if path else "Untitled"
+        index = self.tabs.addTab(editor, title)
         self.tabs.setCurrentIndex(index)
-        self.tab_files[index] = {"path": path, "encrypted": encrypted, "password": password}
 
-        # Set default font size if not already
+        self.tab_files[index] = {
+            "path": path,
+            "encrypted": encrypted,
+            "password": password,
+        }
+
+        # Capture default font size once
         if not self.default_font_size:
             self.default_font_size = editor.font().pointSize()
 
+    # -------------------------------------------------
+    # Tab Closing
+    # -------------------------------------------------
     def close_tab(self, index):
         editor = self.tabs.widget(index)
-        if editor.document().isModified():
+        if editor and editor.document().isModified():
             reply = QMessageBox.question(
-                self.tabs, "Unsaved Changes",
+                self.tabs,
+                "Unsaved Changes",
                 f"Tab '{self.tabs.tabText(index)}' has unsaved changes. Save?",
-                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
             )
+
             if reply == QMessageBox.Save:
                 self.tabs.setCurrentIndex(index)
                 if hasattr(self.parent, "file_handler"):
@@ -75,5 +100,6 @@ class TabManager(QObject):
                         return
             elif reply == QMessageBox.Cancel:
                 return
+
         self.tabs.removeTab(index)
         self.tab_files.pop(index, None)
