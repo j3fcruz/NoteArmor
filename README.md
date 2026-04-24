@@ -54,7 +54,11 @@ File Extension  : .notearmor
 
 | Main Editor | Encrypted Save | Help |
 |---|---|---|
-| *(Main.png)* | *(Encryption.png)* | *(Help.png)* |
+| ![Main](assets/screenshots/Main.png) | ![Encryption](assets/screenshots/Encryption.png) | ![Help](assets/screenshots/Help.png) |
+
+| About | Donate | Terms & License |
+|---|---|---|
+| ![About](assets/screenshots/About.png) | ![Donate](assets/screenshots/Donate.png) | ![Terms](assets/screenshots/TermsandConditions.png) |
 
 ---
 
