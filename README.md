@@ -182,7 +182,7 @@ NoteArmor/
 
 NoteArmor is free for personal use. If it saves your data or your sanity, consider supporting development:
 
-- 🌐 Website: [patronhubdevs.online](https://www.patronhubdevs.online)
+- 🌐 Website: [patronhubdevs.online](https://www.patronhubdevs.com)
 - ☕ Ko-fi: [ko-fi.com/marcopolo55681](https://ko-fi.com/marcopolo55681)
 - 💸 PayPal: [paypal.me/jofreydelacruz13](https://paypal.me/jofreydelacruz13)
 - ₿ Bitcoin: `1BcWJT8gBdZSPwS8UY39X9u4Afu1nZSzqk`
