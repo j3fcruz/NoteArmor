@@ -89,8 +89,12 @@ python -m venv venv
 venv\Scripts\activate      # Windows
 # source venv/bin/activate # Linux/macOS
 
-# 3. Install dependencies
+# 3. Install dependencies/requirements
 pip install PySide6>=6.5.0 cryptography>=41.0.0
+
+or
+
+pip install -r requirements.txt
 
 # 4. Run
 python main.py
